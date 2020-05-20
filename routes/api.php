@@ -14,7 +14,7 @@ use App\Http\Middleware\Cors;
 |
 */
 
-Route::middleware([Cors::class])group(['prefix' => 'auth'], function (){
+Route::middleware([Cors::class])->group(['prefix' => 'auth'], function (){
 
     Route::post('login', 'AuthController@login')->name('login');
     Route::post('signup', 'AuthController@signup');
