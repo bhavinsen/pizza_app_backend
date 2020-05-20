@@ -69,6 +69,18 @@ class CartController extends Controller
         }
     }
 
+    public function update(Cart $cart, Request $request)
+    {
+        if (Auth::guard('api')->check()) {
+            $userId = auth('api')->user()->id;
+            if(!$cart->userID) {
+                $cart->userID = $userId;
+                $cart->save();
+            }
+        }
+        return response()->json([]);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -157,11 +169,11 @@ class CartController extends Controller
         $validator = Validator::make($request->all(), [
             'cartKey' => 'required',
             'name' => 'required',
-            'adress' => 'required',
-            'credit card number' => 'required',
-            'expiration_year' => 'required',
-            'expiration_month' => 'required',
-            'cvc' => 'required',
+            'address' => 'required',
+           // 'credit card number' => 'required',
+           // 'expiration_year' => 'required',
+           // 'expiration_month' => 'required',
+           // 'cvc' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -173,35 +185,16 @@ class CartController extends Controller
         $cartKey = $request->input('cartKey');
         if ($cart->key == $cartKey) {
             $name = $request->input('name');
-            $adress = $request->input('adress');
-            $creditCardNumber = $request->input('credit card number');
+            $adress = $request->input('address');
+            // $creditCardNumber = $request->input('credit card number');
             $TotalPrice = (float) 0.0;
             $items = $cart->items;
 
             foreach ($items as $item) {
-
                 $product = Product::find($item->product_id);
                 $price = $product->price;
-                $inStock = $product->UnitsInStock;
-                if ($inStock >= $item->quantity) {
-
-                    $TotalPrice = $TotalPrice + ($price * $item->quantity);
-
-                    $product->UnitsInStock = $product->UnitsInStock - $item->quantity;
-                    $product->save();
-                } else {
-                    return response()->json([
-                        'message' => 'The quantity you\'re ordering of ' . $item->Name .
-                            ' isn\'t available in stock, only ' . $inStock . ' units are in Stock, please update your cart to proceed',
-                    ], 400);
-                }
+                $TotalPrice = $TotalPrice + ($price * $item->quantity);
             }
-
-            /**
-             * Credit Card information should be sent to a payment gateway for processing and validation,
-             * the response should be dealt with here, but since this is a dummy project we'll
-             * just assume that the information is sent and the payment process was done succefully,
-             */
 
             $PaymentGatewayResponse = true;
             $transactionID = md5(uniqid(rand(), true));
@@ -216,10 +209,11 @@ class CartController extends Controller
                     'transactionID' => $transactionID,
                 ]);
 
-                $cart->delete();
+                // $cart->delete();
 
                 return response()->json([
-                    'message' => 'you\'re order has been completed succefully, thanks for shopping with us!',
+                    'success' => true,
+                    'message' => 'you\'re order has been completed succefully, thanks for shopping with us! Your order reference ID is '.$order->transactionID,
                     'orderID' => $order->getKey(),
                 ], 200);
             }

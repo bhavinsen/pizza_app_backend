@@ -68,9 +68,23 @@ class CartItemController extends Controller
      * @param  \App\CartItem  $cartItem
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, CartItem $cartItem)
+    public function update(Request $request, $id)
     {
-        //
+        try{
+            $item = CartItem::findOrFail($id);
+            if( $request->input('quantity') == 0) {
+               $item->delete();
+            } else {
+              $item->quantity = $request->input('quantity');
+              $item->save();
+            }
+            return response()->json(['success' => true,'message' => 'Cart item Successfully updated!']);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => "Cart item not found."
+            ], 404);
+        }
     }
 
     /**

@@ -29,8 +29,8 @@ Route::group(['prefix' => 'auth'], function (){
 // });
 
 Route::apiResource('/products', 'ProductController');
-Route::apiResource('/carts', 'CartController')->except(['update', 'index']);
+Route::apiResource('/carts', 'CartController')->except([ 'index']);
 Route::apiResource('/orders', 'OrderController')->except(['update', 'destroy', 'store'])->middleware('auth:api');
-Route::apiResource('/cartitems', 'CartItemController')->except(['update', 'index', 'show', 'store']);
+Route::apiResource('/cartitems', 'CartItemController')->except([ 'index', 'show', 'store']);
 Route::post('carts/{cart}', 'CartController@addProduct');
 Route::post('carts/{cart}/checkout', 'CartController@checkout');
