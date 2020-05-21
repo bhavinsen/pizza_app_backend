@@ -6,6 +6,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * @group User Authentication
@@ -30,7 +31,7 @@ class AuthController extends Controller
      * }
      */
     public function signup(Request $request) {
-        $validators = $request->validate([
+        $validators = Validator::make($request->all(),[
             'name' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|confirmed'
@@ -40,7 +41,7 @@ class AuthController extends Controller
             return response()->json([
                 'errors' => $validators->errors(),
         ], 400);
-}
+        }
         $user = new User([
             'name' => $request->name,
             'email' => $request->email,

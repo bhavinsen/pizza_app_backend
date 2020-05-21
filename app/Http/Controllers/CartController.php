@@ -57,7 +57,9 @@ class CartController extends Controller
         }
 
         $cartKey = $request->input('cartKey');
-        if ($cart->key === $cartKey) {
+        $cart = Cart::where('key', $cartKey)->get()->first();
+
+        if ($cart) {
             return response()->json([
                 'cart' => $cart->id,
                 'items' => new CartItemCollection($cart->items)
@@ -129,9 +131,10 @@ class CartController extends Controller
         $cartKey = $request->input('cartKey');
         $productID = $request->input('productID');
         $quantity = $request->input('quantity');
-
+        
+        $cart = Cart::where('key', $cartKey)->get()->first();
         //Check if the CarKey is Valid
-        if ($cart->key == $cartKey) {
+        if ($cart) {
             //Check if the proudct exist or return 404 not found.
             try {
                 $Product = Product::findOrFail($productID);
@@ -183,7 +186,8 @@ class CartController extends Controller
         }
 
         $cartKey = $request->input('cartKey');
-        if ($cart->key == $cartKey) {
+        $cart = Cart::where('key', $cartKey)->get()->first();
+        if ($cart) {
             $name = $request->input('name');
             $adress = $request->input('address');
             // $creditCardNumber = $request->input('credit card number');
