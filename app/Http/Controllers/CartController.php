@@ -206,7 +206,7 @@ class CartController extends Controller
             if ($PaymentGatewayResponse) {
                 $order = Order::create([
                     'products' => json_encode(new CartItemCollection($items)),
-                    'totalPrice' => $TotalPrice,
+                    'totalPrice' => $TotalPrice + 6,
                     'name' => $name,
                     'address' => $adress,
                     'userID' => isset($userID) ? $userID : null,
