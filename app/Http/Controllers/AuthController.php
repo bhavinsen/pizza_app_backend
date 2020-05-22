@@ -72,12 +72,16 @@ class AuthController extends Controller
      */
 
     public function login(Request $request) {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-            'remember_me' => 'boolean'
+        $validators = Validator::make($request->all(),[
+            'email' => 'required',
+            'password' => 'required'
         ]);
 
+        if ($validators->fails()) {
+            return response()->json([
+                'errors' => $validators->errors(),
+        ], 400);
+        }
         $credentials = request(['email', 'password']);
         if(!Auth::attempt($credentials)) {
             return response()->json([
